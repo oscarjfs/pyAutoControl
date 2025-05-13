@@ -478,8 +478,8 @@ class PIDController:
         """
         opcion_caracterizacion = input("Seleccione el método (1. FFT, 2. Signal, 3. Derivadas): ")
 
-        self.auto_tuning_t = np.array(self.auto_tuning_t if y is None else t)
-        self.auto_tuning_y = np.array(self.auto_tuning_y if t is None else y)
+        self.auto_tuning_t = np.array(self.auto_tuning_t if (y is None or len(y) == 0) else t)
+        self.auto_tuning_y = np.array(self.auto_tuning_y if (t is None or len(t) == 0) else y)
 
         if opcion_caracterizacion == '2':
             a, Pu, ubicacion_pico = self.characterize_wave_with_signal()
