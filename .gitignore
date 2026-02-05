@@ -1,4 +1,5 @@
 .agents/
+.continue/
 
 test.py
 
