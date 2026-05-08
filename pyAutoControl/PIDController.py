@@ -19,7 +19,7 @@ class PIDController:
 
     """
 
-    def __init__(self, time_sample: float, Kc: float, Ki: float = 0.0, Kd: float = 0.0, CO_min: float = 0.0, CO_max: float = 100.0):
+    def __init__(self, time_sample: float, Kc: float, Ki: float = 0.0, Kd: float = 0.0, CO_min: float = 0.0, CO_max: float = 100.0, antiwindup: bool = True):
         """
         Inicializa una nueva instancia de la clase PIDController.
 
@@ -52,6 +52,7 @@ class PIDController:
         self.CO_MIN = CO_min
         self.CO_MAX = CO_max
         self.CO_RANGE = CO_max - CO_min
+        self.set_antiwindup_status(antiwindup)
 
         self.set_controller_status(False)
         self.auto_tuning_status = False
@@ -94,6 +95,17 @@ class PIDController:
         self.Kc = Kc
         self.Ki = Ki
         self.Kd = Kd
+
+    def set_antiwindup_status(self, turn_on: bool = True) -> None:
+        '''
+        Actualizar el estado de la acción antiwindup para la acción integral
+
+        Parámetros
+        ----------
+        turn_on: bool
+            Estado de la acción antiwindup, por defecto la acción está encendida es True
+        '''
+        self.ANTIWINDUP = turn_on
 
     def set_controller_status(self, automatic: bool = True) -> None:
         '''
@@ -166,7 +178,8 @@ class PIDController:
         self.Ek = ysp - y
 
         # Anti Wind-Up
-        anti_wind_up = 0 if (current_CO >= self.CO_MAX or current_CO <= self.CO_MIN) else 1
+        if self.ANTIWINDUP:
+            anti_wind_up = 0 if (current_CO >= self.CO_MAX or current_CO <= self.CO_MIN) else 1
 
         q0 = self.Kc + anti_wind_up * self.Ts * self.Ki / 2 + self.Kd / self.Ts
         q1 = self.Kc - anti_wind_up * self.Ts * self.Ki / 2 + 2 * self.Kd / self.Ts
